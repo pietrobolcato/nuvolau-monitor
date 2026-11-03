@@ -1,0 +1,20 @@
+{
+  "checkIn": "2027-07-21",
+  "checkOut": "2027-07-22",
+  "guests": 2,
+  "sameDorm": false,
+  "urls": [
+    "https://rifugionuvolau.it/dormire/",
+    "https://rifugionuvolau.it/modulo-di-prenotazione/",
+    "https://rifugionuvolau.it/disponibilita/",
+    "https://rifugionuvolau.it/",
+    "https://rifugionuvolau.it/en/booking/"
+  ],
+  "allowedHosts": ["rifugionuvolau.it", "www.rifugionuvolau.it"],
+  "maxDiscoveredPages": 2,
+  "timeoutMs": 25000,
+  "settleMs": 2500,
+  "failureAlertAfter": 2,
+  "reminderHours": 6,
+  "stateBranch": "monitor-state"
+}

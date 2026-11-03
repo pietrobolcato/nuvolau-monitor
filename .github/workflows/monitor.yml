@@ -1,0 +1,58 @@
+name: Nuvolau monitor
+
+on:
+  schedule:
+    # UTC, every five minutes, offset from the busy start of each hour.
+    - cron: '2-59/5 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Solo diagnosi, senza notifiche né aggiornamenti dello stato'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: nuvolau-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    # Do not activate unattended monitoring before a real alert has been tested.
+    if: ${{ github.event_name == 'workflow_dispatch' || vars.MONITOR_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      STATE_BACKEND: github
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_ALERTS: ${{ vars.GITHUB_ALERTS }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      HEALTHCHECKS_URL: ${{ secrets.HEALTHCHECKS_URL }}
+      DRY_RUN: ${{ inputs.dry_run }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx playwright install --with-deps chromium
+      - id: check
+        name: Controllo sito e notifiche
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            npm run dry-run
+          else
+            npm run check
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: ${{ always() && (steps.check.outputs.archive == 'true' || failure() || github.event_name == 'workflow_dispatch') }}
+        with:
+          name: nuvolau-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/
+          retention-days: 3
+          if-no-files-found: warn

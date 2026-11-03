@@ -1,0 +1,27 @@
+{
+  "name": "nuvolau-monitor",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Monitor delle prenotazioni del Rifugio Nuvolau con Playwright e GitHub Actions",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "doctor": "node --env-file=.env src/doctor.js",
+    "telegram:discover": "node --env-file=.env src/telegram-setup.js --discover",
+    "telegram:test": "node --env-file=.env src/telegram-setup.js --test",
+    "check:local": "node --env-file=.env src/main.js",
+    "check": "node src/main.js",
+    "dry-run": "node src/main.js --dry-run",
+    "test": "node --test test/*.test.js",
+    "install-browser": "playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "1.64.1"
+  },
+  "devDependencies": {
+    "jquery": "3.7.1",
+    "jquery-ui-dist": "1.13.3"
+  }
+}
