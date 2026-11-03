@@ -39,7 +39,7 @@ export async function sendTest(config) {
   if (!process.env.TELEGRAM_CHAT_ID) throw new Error('Add TELEGRAM_CHAT_ID to .env first.');
   await telegramRequest('sendMessage', {
     chat_id: process.env.TELEGRAM_CHAT_ID,
-    text: `TEST — Nuvolau monitor\n${config.guests} adults: ${config.checkIn} → ${config.checkOut}\nThis is a setup test, NOT an availability alert. No booking has been made.\nPlease confirm you received this message.`,
+    text: `TEST — Nuvolau monitor\n${config.guests} adults: ${config.checkIn} → ${config.checkOut}\nSent from: ${process.env.GITHUB_ACTIONS === 'true' ? 'GitHub Actions' : 'local setup'}\nThis is a setup test, NOT an availability alert. No booking has been made.\nPlease confirm you received this message.`,
     link_preview_options: {is_disabled: true},
   });
 }
